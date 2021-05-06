@@ -1,6 +1,6 @@
 # Slack Bolt App
 
-This is an example App built with [Slack's Bolt Framework](https://slack.dev/bolt/tutorial/getting-started) in node.js.
+This is an example App built with [Slack's Bolt Framework](https://slack.dev/bolt-js/tutorial/getting-started) in node.js.
 
 Our App is a simple reactji channeler which reposts messages from any channel the Bot user is part of to a configured channel, simply by reacting with the ⚡ emoji to any of these messages.
 
