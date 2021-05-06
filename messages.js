@@ -41,7 +41,7 @@ module.exports = {
         }
       }
     ]
-  },  
+  },
   added_to_channel: {
     text: "Bolt has been invited to channel",
     blocks: [
@@ -53,7 +53,7 @@ module.exports = {
         }
       }
     ]
-  }, 
+  },
   channel_configured: {
     text: "The default channel for Bolt has been configured",
     replace_original: true,
@@ -92,5 +92,5 @@ module.exports = {
         }
       }
     ]
-  } 
-}
+  }
+};

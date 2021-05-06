@@ -8,9 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
-  "author": "David Pichsenmeister <opensource@slack.com>",
+  "author": "Slack Technologies, Inc.",
   "license": "MIT",
   "dependencies": {
-    "@slack/bolt": "^1.0.1"
+    "@slack/bolt": "^3.3.0"
   }
 }
