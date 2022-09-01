@@ -3,7 +3,7 @@
 let messages = {};
 let users = {};
 let me = undefined;
-let defaultChannel = "team-kudos";
+let defaultChannel = "C040RADL17W";
 
 exports.getMessages = () => {
   return messages;
