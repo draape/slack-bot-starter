@@ -4,19 +4,10 @@ const messages = require("./messages");
 const helpers = require("./helpers");
 
 const app = new App({
-  // using the `authorize` function instead of the `token` property
-  // to make use of both user and bot tokens
-  authorize: () => {
-    return Promise.resolve({
-      botToken: process.env.SLACK_BOT_TOKEN,
-    });
-  },
+  token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-  // setting `ignoreSelf` to `false` to also retrieve events from our Bot user
-  // e.g. we want to know when our Bot users is added to a channel through the
-  // `member_joined_channel` event
-  ignoreSelf: false,
-  logLevel: "DEBUG",
+  socketMode: true, // add this
+  appToken: process.env.SLACK_APP_TOKEN // add this
 });
 
 /**
@@ -46,9 +37,10 @@ app.event("app_home_opened", async ({ event, say }) => {
   }
 });
 
-app.event("reaction_added", async ({ event, client}) => {
-  
-})
+app.message('hello', async ({ message, say }) => {
+  // say() sends a message to the channel where the event was triggered
+  await say(`Hey there <@${message.user}>!`);
+});
 
 /**
 
