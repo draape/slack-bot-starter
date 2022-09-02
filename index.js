@@ -73,7 +73,7 @@ app.event("reaction_added", async ({ event, client }) => {
     // formatting the user's name to mention that user in the message (see: https://api.slack.com/messaging/composing/formatting)
     let name = "<@" + user.user.id + ">";
     let channel = store.getChannel();
-
+    
     // post this message to the configured channel
     await client.chat.postMessage({
       channel: channel && channel.id,
