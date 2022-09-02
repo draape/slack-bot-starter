@@ -189,32 +189,46 @@ app.error(async (error) => {
 })();
 
 app.command('/kudos', async ({ command, ack, say, respond }) => {
-  console.log(command)
   await ack();
   
-  if(!command.text.startsWith("@") || command.text.includes(" ")) {
+  if(!command.text.startsWith("<@") || command.text.includes(" ")) {
     await respond(`You can only give kudos by mentioning a user with @<username>. ${command.text} is not valid.`);
     return;
   }
   
-  await say(
-    "blocks": [
-		{
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "*It's 80 degrees right now.*"
-			}
-		},
-		{
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "Partly cloudy today and tomorrow"
-			}
-		}
-	]
-}")
+  await respond(
+    {
+    "text": "What kind of kudos would you like to give?",
+    "attachments": [
+        {
+            "text": "Choose a type!",
+            "callback_id": "kudos_type",
+            "color": "#3AA3E3",
+            "attachment_type": "default",
+            "actions": [
+                {
+                    "name": "kudos_type",
+                    "text": ":unicorn_face:",
+                    "type": "button",
+                    "value": "unicorn"
+                },
+                {
+                    "name": "kudos_type",
+                    "text": ":tada:",
+                    "type": "button",
+                    "value": "tada"
+                },
+                {
+                    "name": "kudos_type",
+                    "text": ":avocado:",
+                    "type": "button",
+                    "value": "avocado",
+                }
+            ]
+        }
+    ]
+}
+               );
   
-  await say(`<@${command.user_name}> gave kudos to <${command.text}>`);
+  await say(`<@${command.user_name}> gave kudos to ${command.text}`);
 });
