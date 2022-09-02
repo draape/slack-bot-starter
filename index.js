@@ -188,14 +188,33 @@ app.error(async (error) => {
   store.setMe(id);
 })();
 
-app.command('/kudos', async ({ command, ack, say }) => {
-  // Acknowledge command request
+app.command('/kudos', async ({ command, ack, say, respond }) => {
+  console.log(command)
   await ack();
   
-  console.log("command" + command.toJson());
-  console.log("ack" + command);
-  console.log("say" + command);
+  if(!command.text.startsWith("@") || command.text.includes(" ")) {
+    await respond(`You can only give kudos by mentioning a user with @<username>. ${command.text} is not valid.`);
+    return;
+  }
   
+  await say(
+    "blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*It's 80 degrees right now.*"
+			}
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Partly cloudy today and tomorrow"
+			}
+		}
+	]
+}")
   
-  await say(`kudos til <${command.text}>`);
+  await say(`<@${command.user_name}> gave kudos to <${command.text}>`);
 });
