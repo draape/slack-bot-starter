@@ -187,3 +187,15 @@ app.error(async (error) => {
     .then((result) => result.user_id);
   store.setMe(id);
 })();
+
+app.command('/kudos', async ({ command, ack, say }) => {
+  // Acknowledge command request
+  await ack();
+  
+  console.log("command" + command.toJson());
+  console.log("ack" + command);
+  console.log("say" + command);
+  
+  
+  await say(`kudos til <${command.text}>`);
+});
