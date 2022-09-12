@@ -27,9 +27,9 @@ app.event("reaction_added", async ({ event, client }) => {
     
 
     // post this message to the configured channel
-    await app.client.postMessage({
+    await client.chat.postMessage({
       channel: channel && channel.id,
-      text: messages.wopr,
+      blocks: messages.wopr,
     });
   }
 });
