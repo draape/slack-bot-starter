@@ -20,19 +20,36 @@ We use this event to check if the added emoji is a ⚡ (:zap:) emoji. If that's 
 we'll play a game with WOPR
 
 **/
-app.event("reaction_added", async ({ event, client }) => {
+app.event('reaction_added', async ({ event, client }) => {
   // only react to ⚡ (:zap:) emoji
-  if (event.reaction === "zap") {
+  if (event.reaction === 'zap') {
+    let channelId = event.item.channel;
+    let ts = event.item.ts;
+
+    // get a permalink for this message
+    const permalink = await client.chat.getPermalink({
+      message_ts: ts,
+      channel: channelId,
+    });
+
+    // get user info of user who reacted to this message
+    const user = await client.users.info({
+      user: event.user
+    });
+
+    // formatting the user's name to mention that user in the message (see: https://api.slack.com/messaging/composing/formatting)
+    let name = '<@' + user.user.id + '>';
     let channel = store.getChannel();
-    
 
     // post this message to the configured channel
     await client.chat.postMessage({
       channel: channel && channel.id,
-      attachments: JSON.stringify(messages.wopr),
+      text: name + ' wants you to see this message: ' + permalink.permalink,
+      unfurl_links: true,
+      unfurl_media: true
     });
   }
-});
+})
 
 // get user info of user who reacted to this message
 /*const user = await client.users.info({
