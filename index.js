@@ -8,6 +8,7 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   socketMode: true,
+  ignoreSelf: false
 });
 
 /**
@@ -16,8 +17,8 @@ const app = new App({
 
 https://api.slack.com/events/reaction_added
 
-We use this event to check if the added emoji is a ⚡ (:zap:) emoji. If that's the case,
-we'll play a game with WOPR
+We use this event to check if the added emoji (reactji) is a ⚡ (:zap:) emoji. If that's the case,
+a link to this message will be posted to the configured channel
 
 **/
 app.event('reaction_added', async ({ event, client }) => {
@@ -51,13 +52,30 @@ app.event('reaction_added', async ({ event, client }) => {
   }
 })
 
-// get user info of user who reacted to this message
-/*const user = await client.users.info({
-      user: event.user,
-    });*/
+/**
 
-// formatting the user's name to mention that user in the message (see: https://api.slack.com/messaging/composing/formatting)
-//let name = "<@" + user.user.id + ">";
+`member_joined_channel` event is triggered when a user joins public or private channels
+
+https://api.slack.com/events/member_joined_channel
+
+We use this event to introduce our App once it's added to a channel
+
+**/
+app.event('member_joined_channel', async ({ event, say }) => {
+  console.log("joined");
+  let channel = store.getChannel();
+  let user = event.user;
+
+  // check if our Bot user itself is joining the channel
+  //if (user === store.getMe() && channel) {
+    let message = helpers.copy(messages.welcome_channel);
+    // fill in placeholder values with channel info
+    message.blocks[0].text.text = message.blocks[0].text.text
+      .replace('{{channelName}}', channel.name)
+      .replace('{{channelId}}', channel.id);
+    await say(message);
+  //}
+});
 
 app.error(async (error) => {
   // Check the details of the error to handle cases where you should retry sending a message or stop the app
