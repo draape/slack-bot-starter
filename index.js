@@ -5,41 +5,9 @@ const helpers = require("./helpers");
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
+  appToken: process.env.SLACK_APP_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-  socketMode: true, // add this
-  appToken: process.env.SLACK_APP_TOKEN // add this
-});
-
-/**
-
-`app_home_opened` event is triggered when a user has entered into the App Home space (= Bot User DM)
-
-https://api.slack.com/events/app_home_opened
-
-We use this event to show the user an interactive welcome message once they open a DM with our App
-to let them configure our App and let them choose a default channel to post messages to
-
-
-
-**/
-app.event("app_home_opened", async ({ event, say }) => {
-  console.log("app_home_opened");
-  let user = store.getUser(event.user);
-
-  if (!user) {
-    user = {
-      user: event.user,
-      channel: event.channel,
-    };
-    store.addUser(user);
-
-    await say(messages.welcome_app_home);
-  }
-});
-
-app.message('hello', async ({ message, say }) => {
-  // say() sends a message to the channel where the event was triggered
-  await say(`Hey there <@${message.user}>!`);
+  socketMode: true,
 });
 
 /**
@@ -48,12 +16,11 @@ app.message('hello', async ({ message, say }) => {
 
 https://api.slack.com/events/reaction_added
 
-We use this event to check if the added emoji (reactji) is a ⚡ (:zap:) emoji. If that's the case,
-a link to this message will be posted to the configured channel
+We use this event to check if the added emoji is a ⚡ (:zap:) emoji. If that's the case,
+we'll play a game with WOPR
 
 **/
 app.event("reaction_added", async ({ event, client }) => {
-  console.log("reaction added");
   // only react to ⚡ (:zap:) emoji
   if (event.reaction === "zap") {
     let channelId = event.item.channel;
@@ -65,109 +32,25 @@ app.event("reaction_added", async ({ event, client }) => {
       channel: channelId,
     });
 
-    // get user info of user who reacted to this message
-    const user = await client.users.info({
-      user: event.user,
-    });
+    
 
-    // formatting the user's name to mention that user in the message (see: https://api.slack.com/messaging/composing/formatting)
-    let name = "<@" + user.user.id + ">";
     let channel = store.getChannel();
     
     // post this message to the configured channel
     await client.chat.postMessage({
       channel: channel && channel.id,
-      text: name + " wants you to see this message: " + permalink.permalink,
-      unfurl_links: true,
-      unfurl_media: true,
+      text: messages.wopr,
     });
   }
 });
 
-/**
-
-`member_joined_channel` event is triggered when a user joins public or private channels
-
-https://api.slack.com/events/member_joined_channel
-
-We use this event to introduce our App once it's added to a channel
-
-**/
-app.event("member_joined_channel", async ({ event, say }) => {
-  let channel = store.getChannel();
-  let user = event.user;
-
-  // check if our Bot user itself is joining the channel
-  if (user === store.getMe() && channel) {
-    let message = helpers.copy(messages.welcome_channel);
-    // fill in placeholder values with channel info
-    message.blocks[0].text.text = message.blocks[0].text.text
-      .replace("{{channelName}}", channel.name)
-      .replace("{{channelId}}", channel.id);
-    await say(message);
-  }
-});
-
-/**
-
-The action_id `configure_channel` is triggered when a user interacts with the welcome_app_home message (in messages.js) 
-
-**/
-app.action(
-  { action_id: "configure_channel" },
-  async ({ action, ack, respond, client }) => {
-    await ack();
-
-    let channelId = action.selected_channel;
-
-    // retrieve channel info
-    let channelInfo = await client.channels.info({
-      channel: channelId,
+// get user info of user who reacted to this message
+    const user = await client.users.info({
+      user: event.user,
     });
 
-    // save the configured channel to our store
-    store.setChannel({
-      name: channelInfo.channel.name,
-      id: channelId,
-    });
-
-    let message = helpers.copy(messages.channel_configured);
-    // fill in placeholder values with channel info
-    message.blocks[0].text.text = message.blocks[0].text.text
-      .replace("{{channelId}}", channelId)
-      .replace("{{channelName}}", channelInfo.channel.name);
-    await respond(message);
-  }
-);
-
-/**
-
-The action_id `add_to_channel` is triggered when a user interacts with the channel_configured message (in messages.js) 
-
-**/
-app.action("add_to_channel", async ({ action, ack, say, client }) => {
-  await ack();
-
-  let channelId = action.selected_channel;
-
-  // retrieve channel info
-  let channelInfo = await client.conversations.info({
-    channel: channelId,
-  });
-
-  // invite Bot user to channel
-  await client.channels.invite({
-    channel: channelId,
-    user: store.getMe(),
-  });
-
-  let message = helpers.copy(messages.added_to_channel);
-  // fill in placeholder values with channel info
-  message.blocks[0].text.text = message.blocks[0].text.text
-    .replace("{{channelId}}", channelId)
-    .replace("{{channelName}}", channelInfo.channel.name);
-  await say(message);
-});
+// formatting the user's name to mention that user in the message (see: https://api.slack.com/messaging/composing/formatting)
+    //let name = "<@" + user.user.id + ">";
 
 app.error(async (error) => {
   // Check the details of the error to handle cases where you should retry sending a message or stop the app
@@ -187,48 +70,3 @@ app.error(async (error) => {
     .then((result) => result.user_id);
   store.setMe(id);
 })();
-
-app.command('/kudos', async ({ command, ack, say, respond }) => {
-  await ack();
-  
-  if(!command.text.startsWith("<@") || command.text.includes(" ")) {
-    await respond(`You can only give kudos by mentioning a user with @<username>. ${command.text} is not valid.`);
-    return;
-  }
-  
-  await respond(
-    {
-    "text": "What kind of kudos would you like to give?",
-    "attachments": [
-        {
-            "text": "Choose a type!",
-            "callback_id": "kudos_type",
-            "color": "#3AA3E3",
-            "attachment_type": "default",
-            "actions": [
-                {
-                    "name": "kudos_type",
-                    "text": ":unicorn_face:",
-                    "type": "button",
-                    "value": "unicorn"
-                },
-                {
-                    "name": "kudos_type",
-                    "text": ":tada:",
-                    "type": "button",
-                    "value": "tada"
-                },
-                {
-                    "name": "kudos_type",
-                    "text": ":avocado:",
-                    "type": "button",
-                    "value": "avocado",
-                }
-            ]
-        }
-    ]
-}
-               );
-  
-  await say(`<@${command.user_name}> gave kudos to ${command.text}`);
-});

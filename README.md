@@ -32,3 +32,7 @@ Our App is a simple reactji channeler which reposts messages from any channel th
 #### Bot events
 * [`member_joined_channel`](https://api.slack.com/events/member_joined_channel)
 * [`reaction_added`](https://api.slack.com/events/reaction_added)
+
+SLACK_BOT_TOKEN
+SLACK_SIGNING_SECRET
+SLACK_APP_TOKEN
