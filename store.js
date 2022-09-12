@@ -3,7 +3,7 @@
 let messages = {};
 let users = {};
 let me = undefined;
-let defaultChannel = {id: "C040RADL17W"};
+let defaultChannel = {id: "C041N87571V"};
 
 exports.getMessages = () => {
   return messages;
