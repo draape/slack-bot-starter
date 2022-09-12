@@ -21,8 +21,10 @@ we'll play a game with WOPR
 
 **/
 app.event("reaction_added", async ({ event, client, respond }) => {
+  console.log("asdf");
   // only react to ⚡ (:zap:) emoji
   if (event.reaction === "zap") {
+    console.log("deg");
     let channel = store.getChannel();
     
 
