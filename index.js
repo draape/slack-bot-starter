@@ -62,11 +62,8 @@ We use this event to introduce our App once it's added to a channel
 
 **/
 app.event('member_joined_channel', async ({ event, say }) => {
-  console.log("joined");
   let channel = store.getChannel();
   let user = event.user;
-  
-  console.log(user);
 
   // check if our Bot user itself is joining the channel
   if (user === store.getMe() && channel) {
