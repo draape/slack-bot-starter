@@ -1,16 +1,16 @@
-# Slack Bolt App
+# ⚡️ Slack Bolt App
 
 This is an example App built with [Slack's Bolt Framework](https://slack.dev/bolt-js/tutorial/getting-started) in node.js.
 
 Our App is a simple reactji channeler which reposts messages from any channel the Bot user is part of to a configured channel,
 simply by reacting with the ⚡ emoji to any of these messages.
 
-### Features
+### ✨ Features
 
 - Once our App is invited to a channel it will introduce itself with [`member_joined_channel`](https://api.slack.com/events/member_joined_channel) event
 - When a user adds a reaction with the ⚡ emoji to a message in a channel where the Bot User is part of, it will post a link of this message to the configured channel.
 
-### Step by step setup
+### ✅ Step by step setup
 
 If you get stuck or want to read more, read [this introduction](https://api.slack.com/start/building/bolt-js#create).
 
@@ -29,3 +29,6 @@ If you get stuck or want to read more, read [this introduction](https://api.slac
 1. Go to `Socket Mode` and enable it. Keep the token, this should go into the `SLACK_APP_TOKEN` environment variable in Glitch
 1. It's time to re-install your app 😀
 1. Go to `Basic information` and copy the Signing Secret into you `SLACK_SIGNING_SECRET` env variable
+
+💡 **TIP**
+Create a team Slack channel to do your testing. Change the default channel in `store.js` to the id of the channel your create.
