@@ -65,16 +65,18 @@ app.event('member_joined_channel', async ({ event, say }) => {
   console.log("joined");
   let channel = store.getChannel();
   let user = event.user;
+  
+  console.log(user);
 
   // check if our Bot user itself is joining the channel
-  //if (user === store.getMe() && channel) {
+  if (user === store.getMe() && channel) {
     let message = helpers.copy(messages.welcome_channel);
     // fill in placeholder values with channel info
     message.blocks[0].text.text = message.blocks[0].text.text
       .replace('{{channelName}}', channel.name)
       .replace('{{channelId}}', channel.id);
     await say(message);
-  //}
+  }
 });
 
 app.error(async (error) => {
