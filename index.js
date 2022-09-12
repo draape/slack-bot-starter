@@ -29,7 +29,7 @@ app.event("reaction_added", async ({ event, client }) => {
     // post this message to the configured channel
     await client.chat.postMessage({
       channel: channel && channel.id,
-      blocks: messages.wopr,
+      attachments: JSON.stringify(messages.wopr),
     });
   }
 });
